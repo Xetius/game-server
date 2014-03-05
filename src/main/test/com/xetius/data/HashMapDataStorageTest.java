@@ -13,6 +13,7 @@ public class HashMapDataStorageTest {
     @Before
     public void setUp() {
         dataStorage = HashMapDataStorage.getInstance();
+        dataStorage.reset();
     }
 
     @Test

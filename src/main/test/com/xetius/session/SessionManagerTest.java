@@ -43,4 +43,20 @@ public class SessionManagerTest {
         Assert.assertNotNull(sessionId2);
         Assert.assertNotEquals(sessionId1, sessionId2);
     }
+
+    @Test
+    public void testGetUserIdForNonExistentSessionReturnsZero() {
+        SessionManager sessionManager = SessionManager.getInstance();
+        int userId = sessionManager.getUserId("AAAAAAAAAA");
+        Assert.assertEquals(0, userId);
+    }
+
+    @Test
+    public void testAccessingExpiredSessionsRemovesSessionsFromSessionManager() {
+        SessionManager sessionManager = SessionManager.getInstance();
+        sessionManager.sessions.put(1234, new SessionData("AAAAAAAAAA", (System.currentTimeMillis() - 600001)));
+        Assert.assertTrue(sessionManager.sessions.containsKey(1234));
+        sessionManager.existingValidSessionExists(1234);
+        Assert.assertFalse(sessionManager.sessions.containsKey(1234));
+    }
 }

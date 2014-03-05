@@ -11,8 +11,12 @@ public class HashMapDataStorage implements DataStorage {
     private Map<Integer, Map<Integer, Integer>> scores;
 
     private HashMapDataStorage() {
-        scores = new ConcurrentHashMap<>();
         sessionManager = SessionManager.getInstance();
+        reset();
+    }
+
+    public void reset() {
+        scores = new ConcurrentHashMap<>();
     }
 
     public static HashMapDataStorage getInstance() {

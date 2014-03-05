@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.xetius.data.HashMapDataStorage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -22,6 +21,7 @@ public class ScoreUpdateRequestHandler extends AbstractHttpHandler {
         storage.setLevelScoreForUser(level, sessionId, score);
     }
 
+    @SuppressWarnings("MalformedRegex")
     private int extractLevel(HttpExchange httpExchange) {
         URI uri = httpExchange.getRequestURI();
         String path = uri.getPath();
@@ -34,17 +34,20 @@ public class ScoreUpdateRequestHandler extends AbstractHttpHandler {
     }
 
     private String extractSessionId(HttpExchange httpExchange) {
-        Map<String, Object> params = (Map<String, Object>)httpExchange.getAttribute("parameters");
-        return (String)params.get("sessionkey");
+        return extractParameter(httpExchange, "sessionkey");
     }
 
     private int extractScore(HttpExchange httpExchange) {
-        String scoreString = convertStreamToString(httpExchange.getRequestBody());
+        String scoreString = extractParameter(httpExchange, "score");
         return Integer.parseInt(scoreString);
     }
 
-    private static String convertStreamToString(java.io.InputStream is) {
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
+    @SuppressWarnings("unchecked")
+    private String extractParameter(HttpExchange httpExchange, String paramKey) {
+        Map<String, Object> params = (Map<String, Object>) httpExchange.getAttribute("parameters");
+        if (params.containsKey(paramKey)) {
+            return (String)params.get(paramKey);
+        }
+        return "";
     }
 }

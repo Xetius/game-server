@@ -4,12 +4,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
     private static SessionManager instance;
-    private SessionIdGenerator sessionIdGenerator;
-    private ConcurrentHashMap<Integer, SessionData> sessions;
-    private ConcurrentHashMap<String, Integer> userIds;
+    ConcurrentHashMap<Integer, SessionData> sessions;
+    ConcurrentHashMap<String, Integer> userIds;
 
     private SessionManager(){
-        sessionIdGenerator = new SessionIdGenerator();
         sessions = new ConcurrentHashMap<>();
         userIds = new ConcurrentHashMap<>();
     }
@@ -33,7 +31,7 @@ public class SessionManager {
         return createNewSessionId(userId);
     }
 
-    private boolean existingValidSessionExists(int userId) {
+    boolean existingValidSessionExists(int userId) {
         if (sessions.containsKey(userId)) {
             SessionData sessionData = sessions.get(userId);
             if (!sessionData.hasExpired()) {
@@ -52,7 +50,7 @@ public class SessionManager {
     }
 
     private String createNewSessionId(int userId) {
-        String sessionId = sessionIdGenerator.getId();
+        String sessionId = SessionIdGenerator.getId();
         long now = System.currentTimeMillis();
         SessionData sessionData = new SessionData(sessionId, now);
         sessions.put(userId, sessionData);

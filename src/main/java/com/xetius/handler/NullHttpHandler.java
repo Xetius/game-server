@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
@@ -22,11 +23,16 @@ public class NullHttpHandler implements HttpHandler {
             Headers requestHeaders = httpExchange.getRequestHeaders();
             Set<String> keySet = requestHeaders.keySet();
             for (String key : keySet) {
-                List values = requestHeaders.get(key);
+                List<String> values = requestHeaders.get(key);
                 String s = key + " = " + values.toString() + "\n";
                 responseBody.write(s.getBytes());
             }
+
+            URI uri = httpExchange.getRequestURI();
+            responseBody.write(("path = " + uri.getPath()).getBytes());
+            responseBody.write(("query = " + uri.getQuery()).getBytes());
             responseBody.close();
         }
     }
+
 }
